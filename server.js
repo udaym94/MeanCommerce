@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
-
+//CORS here
 var api = require('./server/api');
 var app = express();
 

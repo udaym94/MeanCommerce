@@ -1,8 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpModule } from '@angular/http';
 import { Router,Routes,RouterModule } from '@angular/router';
-
+import {FormsModule} from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -14,9 +14,16 @@ import { ProductsComponent } from './products/products.component';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { CartComponent } from './cart/cart.component';
 
+import {RegistrationService} from './registration.service';
+import {LoginService} from './login.service';
+
 const appRoutes:Routes = [
   {
     path:'',
+    component: LoginComponent
+  },
+  {
+    path:'login',
     component: LoginComponent
   },
   {
@@ -54,11 +61,13 @@ const appRoutes:Routes = [
     CartComponent
   ],
   imports: [
+    HttpModule,
+    FormsModule,
     BrowserModule,
     RouterModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [RegistrationService,LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
