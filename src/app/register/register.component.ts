@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Http } from '@angular/http';
 import { FormControl,Form,FormsModule } from '@angular/forms';
+import { RegistrationService } from '../registration.service';
 import 'rxjs/add/operator/map';
 
 @Component({
@@ -10,7 +10,7 @@ import 'rxjs/add/operator/map';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(private http: Http) {}
+  constructor(private registerUser: RegistrationService) {}
 
   ngOnInit() {
   }
@@ -18,5 +18,6 @@ export class RegisterComponent implements OnInit {
   createUser(user: any) {
     alert(user.name + ' ' + user.username + ' ' + user.password + ' ' + user.email);
     // this.http.post('/register',{user},);
+    this.registerUser.register(user);
   }
 }

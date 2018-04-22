@@ -29,8 +29,10 @@ var sendError = (err,res) => {
 // });
 router.post('/register', (req,res) => {
     var userdata = _.pick(req.body,{name,email,username,password});
+    console.log(userdata);
     User.create(userdata, (err,user) => {
-        
+        if(err) res.send('err');
+        res.send('success');
     });
 });
 
