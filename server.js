@@ -3,11 +3,20 @@ const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
 //CORS here
+var flash = require('connect-flash');
+
 var api = require('./server/api');
 var app = express();
 
+// app.configure(function() {
+//   app.use(express.cookieParser('keyboard cat'));
+//   app.use(express.session({ cookie: { maxAge: 60000 }}));
+//   app.use(flash());
+// });
+
 var port = process.env.PORT || 3000;
 
+app.use(flash());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 

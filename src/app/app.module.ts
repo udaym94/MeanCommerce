@@ -16,6 +16,7 @@ import { CartComponent } from './cart/cart.component';
 
 import {RegistrationService} from './registration.service';
 import {LoginService} from './login.service';
+import {DashboardService} from './dashboard.service';
 
 const appRoutes:Routes = [
   {
@@ -67,7 +68,7 @@ const appRoutes:Routes = [
     RouterModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [RegistrationService,LoginService],
+  providers: [RegistrationService,LoginService,DashboardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

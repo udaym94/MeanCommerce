@@ -1,5 +1,5 @@
 <div class="col-md-4 offset-md-4">
-  <form class="">
+  <form class="" #userlogin = "ngForm" (ngSubmit) = "authUser(userlogin.value)">
     <div class="form-group">
       <label class="control-label">Email ID</label>
       <input type="email" name="email" placeholder="Registered Email ID" class="form-control">

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl,Form,FormsModule } from '@angular/forms';
 import { RegistrationService } from '../registration.service';
+import { Http } from '@angular/http';
+import { DomSanitizer } from '@angular/platform-browser';
 import 'rxjs/add/operator/map';
 
 @Component({
@@ -9,15 +11,25 @@ import 'rxjs/add/operator/map';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-  constructor(private registerUser: RegistrationService) {}
+  message;
+  outputMsg:any;
+  constructor(private registerUser: RegistrationService, private http: Http, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
   }
 
   createUser(user: any) {
-    alert(user.name + ' ' + user.username + ' ' + user.password + ' ' + user.email);
-    // this.http.post('/register',{user},);
-    this.registerUser.register(user);
+    // this.http.post('/register',user).then();
+    this.registerUser.register(user).subscribe((response) => {
+      this.message = response;
+      console.log(this.message._body);
+      console.log(typeof this.message._body);
+      if(this.message._body == 'success'){
+        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Registration Successful</strong> Now you can <a routerLink="/login">Login</a> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+      }
+      else{
+        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Whoops!</strong> Looks like something went Wrong, please retry in sometime <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+      }
+    });
   }
 }
