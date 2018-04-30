@@ -8,6 +8,6 @@ export class RegistrationService {
   response;
   constructor(private _http: Http) { }
   register(user){
-    return this._http.post('/register', user).map(response => this.response = response);
+    return this._http.post('/register', user).map(response => this.response = response.json());
   }
 }

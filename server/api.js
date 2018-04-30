@@ -30,24 +30,65 @@ var sendError = (err,res) => {
 // });
 router.post('/register', (req,res) => {
     var userdata = _.pick(req.body,['name','email','username','password']);
-    User.create(userdata, (err,user) => {
-        if(err) res.send('err');
-        res.send('success');
+    var newUser = new User(userdata);
+    User.addUser(newUser, (err, user) => {
+        if(err){
+          res.json({success: false, msg:'Failed to register user'});
+        } else {
+          res.json({success: true, msg:'User registered'});
+        }
     });
+    // User.create(userdata, (err,user) => {
+    //     if(err) res.send('err');
+    //     res.send('success');
+    // });
 });
 
-router.post('/authenticate', 
-    passport.authenticate('local', { successRedirect: '/dashboard',failureRedirect: '/login', failureFlash: true  }),
-    (req,res) => {
-    // req.passport.
-});
-
-router.get('/dashboard', (req,res) => {
-    const loggedInUser = '5ae3eb4ebe031920d02c82c4';
-    User.findById(loggedInUser, (err,user)=> {
-        if(err) res.send('err');
-        response.data = user;
-        res.json(response);
+router.post('/authenticate', (req, res, next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+  
+    User.getUserByUsername(username, (err, user) => {
+      if(err) throw err;
+      if(!user){
+        return res.json({success: false, msg: 'User not found'});
+      }
+  
+      User.comparePassword(password, user.password, (err, isMatch) => {
+        if(err) throw err;
+        if(isMatch){
+          const token = jwt.sign({data: user}, config.secret, {
+            expiresIn: 604800 // 1 week
+          });
+  
+          res.json({
+            success: true,
+            token: `Bearer ${token}`,
+            user: {
+              id: user._id,
+              name: user.name,
+              username: user.username,
+              email: user.email
+            }
+          });
+        } else {
+          return res.json({success: false, msg: 'Wrong password'});
+        }
+      });
     });
-})
+  });
+
+  router.get('/dashboard', passport.authenticate('jwt', {session:false}), (req, res, next) => {
+    res.json({user: req.user});
+  });
+
+//   router.get('/dashboard', (req,res) => {
+//     const loggedInUser = '5ae3eb4ebe031920d02c82c4';
+//     User.findById(loggedInUser, (err,user)=> {
+//         if(err) res.send('err');
+//         response.data = user;
+//         res.json(response);
+//     });
+//   })
+
 module.exports = router;

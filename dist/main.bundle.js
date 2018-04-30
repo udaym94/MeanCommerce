@@ -422,6 +422,7 @@ var HeaderComponent = /** @class */ (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LoginService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("./node_modules/@angular/http/esm5/http.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -432,12 +433,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var LoginService = /** @class */ (function () {
-    function LoginService() {
+    function LoginService(_http) {
+        this._http = _http;
     }
+    LoginService.prototype.authenticateUser = function (user) {
+        var _this = this;
+        return this._http.post('/authenticate', user).map(function (response) { return _this.response = response; });
+    };
     LoginService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Http */]])
     ], LoginService);
     return LoginService;
 }());
@@ -456,7 +463,7 @@ module.exports = ""
 /***/ "./src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"col-md-4 offset-md-4\">\n  <form class=\"\">\n    <div class=\"form-group\">\n      <label class=\"control-label\">Email ID</label>\n      <input type=\"email\" name=\"email\" placeholder=\"Registered Email ID\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <label class=\"control-label\">Password</label>\n      <input type=\"password\" name=\"password\" placeholder=\"Correct Password\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <button class=\"btn btn-info\">Log In</button>\n      <span class=\"float-right\">Don't have an Account, <a routerLink = \"/register\" class=\"btn btn-link\">Register Here</a></span>\n      <span class=\"float-right\">Already a Member, <a routerLink = \"/dashboard\" class=\"btn btn-link\">Dashboard Here</a></span>\n    </div>\n  </form>\n</div>\n"
+module.exports = "<div class=\"col-md-4 offset-md-4\">\n  <form class=\"\" #userlogin = \"ngForm\" (ngSubmit) = \"authUser(userlogin.value)\">\n    <div class=\"form-group\">\n      <label class=\"control-label\">Email ID</label>\n      <input type=\"email\" name=\"email\" placeholder=\"Registered Email ID\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <label class=\"control-label\">Password</label>\n      <input type=\"password\" name=\"password\" placeholder=\"Correct Password\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <button class=\"btn btn-info\">Log In</button>\n      <span class=\"float-right\">Don't have an Account, <a routerLink = \"/register\" class=\"btn btn-link\">Register Here</a></span>\n      <span class=\"float-right\">Already a Member, <a routerLink = \"/dashboard\" class=\"btn btn-link\">Dashboard Here</a></span>\n    </div>\n  </form>\n</div>\n"
 
 /***/ }),
 
@@ -466,6 +473,7 @@ module.exports = "<div class=\"col-md-4 offset-md-4\">\n  <form class=\"\">\n   
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LoginComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__login_service__ = __webpack_require__("./src/app/login.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -476,10 +484,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var LoginComponent = /** @class */ (function () {
-    function LoginComponent() {
+    function LoginComponent(loginService) {
+        this.loginService = loginService;
     }
     LoginComponent.prototype.ngOnInit = function () {
+    };
+    LoginComponent.prototype.authUser = function (data) {
+        var _this = this;
+        this.loginService.authenticateUser(data).subscribe(function (response) { return _this.result = response.json(); });
     };
     LoginComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
@@ -487,7 +501,7 @@ var LoginComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/login/login.component.html"),
             styles: [__webpack_require__("./src/app/login/login.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__login_service__["a" /* LoginService */]])
     ], LoginComponent);
     return LoginComponent;
 }());
@@ -647,13 +661,11 @@ var RegisterComponent = /** @class */ (function () {
         // this.http.post('/register',user).then();
         this.registerUser.register(user).subscribe(function (response) {
             _this.message = response;
-            console.log(_this.message._body);
-            console.log(typeof _this.message._body);
-            if (_this.message._body == 'success') {
+            if (_this.message.success == true) {
                 _this.outputMsg = _this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Registration Successful</strong> Now you can <a routerLink="/login">Login</a> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
             }
             else {
-                _this.outputMsg = _this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Whoops!</strong> Looks like something went Wrong, please retry in sometime <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                _this.outputMsg = _this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Whoops!</strong> Looks like something went Wrong, please retry in sometime <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
             }
         });
     };
@@ -698,7 +710,7 @@ var RegistrationService = /** @class */ (function () {
     }
     RegistrationService.prototype.register = function (user) {
         var _this = this;
-        return this._http.post('/register', user).map(function (response) { return _this.response = response; });
+        return this._http.post('/register', user).map(function (response) { return _this.response = response.json(); });
     };
     RegistrationService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* Injectable */])(),

@@ -22,13 +22,11 @@ export class RegisterComponent implements OnInit {
     // this.http.post('/register',user).then();
     this.registerUser.register(user).subscribe((response) => {
       this.message = response;
-      console.log(this.message._body);
-      console.log(typeof this.message._body);
-      if(this.message._body == 'success'){
+      if(this.message.success == true){
         this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Registration Successful</strong> Now you can <a routerLink="/login">Login</a> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
       }
       else{
-        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Whoops!</strong> Looks like something went Wrong, please retry in sometime <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Whoops!</strong> Looks like something went Wrong, please retry in sometime <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
       }
     });
   }
