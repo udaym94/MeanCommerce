@@ -157,8 +157,8 @@ var AppModule = /** @class */ (function () {
                 __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* HttpModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["a" /* RouterModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["a" /* RouterModule */].forRoot(appRoutes)
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */],
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(appRoutes)
             ],
             providers: [__WEBPACK_IMPORTED_MODULE_14__registration_service__["a" /* RegistrationService */], __WEBPACK_IMPORTED_MODULE_15__login_service__["a" /* LoginService */], __WEBPACK_IMPORTED_MODULE_16__dashboard_service__["a" /* DashboardService */]],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */]]
@@ -463,7 +463,7 @@ module.exports = ""
 /***/ "./src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"col-md-4 offset-md-4\">\n  <form class=\"\" #userlogin = \"ngForm\" (ngSubmit) = \"authUser(userlogin.value)\">\n    <div class=\"form-group\">\n      <label class=\"control-label\">Email ID</label>\n      <input type=\"email\" name=\"email\" placeholder=\"Registered Email ID\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <label class=\"control-label\">Password</label>\n      <input type=\"password\" name=\"password\" placeholder=\"Correct Password\" class=\"form-control\">\n    </div>\n    <div class=\"form-group\">\n      <button class=\"btn btn-info\">Log In</button>\n      <span class=\"float-right\">Don't have an Account, <a routerLink = \"/register\" class=\"btn btn-link\">Register Here</a></span>\n      <span class=\"float-right\">Already a Member, <a routerLink = \"/dashboard\" class=\"btn btn-link\">Dashboard Here</a></span>\n    </div>\n  </form>\n</div>\n"
+module.exports = "<div class=\"col-md-4 offset-md-4\">\n    <div class=\"\" [innerHTML]=\"outputMsg\"></div>\n  <form class=\"\" #userlogin = \"ngForm\" (ngSubmit) = \"authUser(userlogin.value)\">\n    <div class=\"form-group\">\n      <label class=\"control-label\">Email ID</label>\n      <input type=\"email\" name=\"email\" placeholder=\"Registered Email ID\" class=\"form-control\" ngModel>\n    </div>\n    <div class=\"form-group\">\n      <label class=\"control-label\">Password</label>\n      <input type=\"password\" name=\"password\" placeholder=\"Correct Password\" class=\"form-control\" ngModel>\n    </div>\n    <div class=\"form-group\">\n      <button class=\"btn btn-info\">Log In</button>\n      <span class=\"float-right\">Don't have an Account, <a routerLink = \"/register\" class=\"btn btn-link\">Register Here</a></span>\n      <span class=\"float-right\">Already a Member, <a routerLink = \"/dashboard\" class=\"btn btn-link\">Dashboard Here</a></span>\n    </div>\n  </form>\n</div>\n"
 
 /***/ }),
 
@@ -474,6 +474,9 @@ module.exports = "<div class=\"col-md-4 offset-md-4\">\n  <form class=\"\" #user
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LoginComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__login_service__ = __webpack_require__("./src/app/login.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__("./node_modules/@angular/http/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_platform_browser__ = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -485,15 +488,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
+
+
+// import 'rxjs/add/operator/map';
 var LoginComponent = /** @class */ (function () {
-    function LoginComponent(loginService) {
+    function LoginComponent(loginService, http, sanitizer, router) {
         this.loginService = loginService;
+        this.http = http;
+        this.sanitizer = sanitizer;
+        this.router = router;
     }
     LoginComponent.prototype.ngOnInit = function () {
     };
     LoginComponent.prototype.authUser = function (data) {
         var _this = this;
-        this.loginService.authenticateUser(data).subscribe(function (response) { return _this.result = response.json(); });
+        this.loginService.authenticateUser(data).subscribe(function (response) {
+            _this.result = response.json();
+            if (_this.result.success == true) {
+                _this.outputMsg = _this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Login Successful</strong> Taking You to Dashboard <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                _this.router.navigate(['/dashboard'], { queryParams: { auth_token: _this.result.token } });
+            }
+            else if (_this.result.success == false) {
+                _this.outputMsg = _this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Whoops!</strong> ' + _this.result.msg + ' <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+            }
+        });
     };
     LoginComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
@@ -501,7 +520,7 @@ var LoginComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/login/login.component.html"),
             styles: [__webpack_require__("./src/app/login/login.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__login_service__["a" /* LoginService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__login_service__["a" /* LoginService */], __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* Http */], __WEBPACK_IMPORTED_MODULE_3__angular_platform_browser__["b" /* DomSanitizer */], __WEBPACK_IMPORTED_MODULE_4__angular_router__["a" /* Router */]])
     ], LoginComponent);
     return LoginComponent;
 }());

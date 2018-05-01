@@ -22,15 +22,15 @@ var schema = new mongoose.Schema(
             min: 5
         }
     });
-const Users = mongoose.model('Users', schema);
-module.exports = Users;
+const User = mongoose.model('Users', schema);
+module.exports = User;
 
   module.exports.getUserById = function(id, callback){
     User.findById(id, callback);
   }
   
-  module.exports.getUserByUsername = function(username, callback){
-    const query = {username: username}
+  module.exports.getUserByEmail = function(email, callback){
+    const query = {email: email}
     User.findOne(query, callback);
   }
   

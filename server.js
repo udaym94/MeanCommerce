@@ -4,7 +4,8 @@ const http = require('http');
 const bodyParser = require('body-parser');
 //CORS here
 var flash = require('connect-flash');
-
+var passport = require('passport');
+var jwt = require('jsonwebtoken');
 var api = require('./server/api');
 var app = express();
 
@@ -21,6 +22,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static(path.join(__dirname, 'dist')));
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./server/config/passport')(passport);
+
 app.use('/', api);
 
 app.get('*'), (req, res) => {
