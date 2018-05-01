@@ -14,8 +14,10 @@ import { ProductsComponent } from './products/products.component';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { CartComponent } from './cart/cart.component';
 
-import {RegistrationService} from './registration.service';
-import {LoginService} from './login.service';
+// import {RegistrationService} from './registration.service';
+// import {LoginService} from './login.service';
+import {FlashMessagesModule, FlashMessagesService} from 'angular2-flash-messages';
+import { AuthService } from './auth.service';
 import {DashboardService} from './dashboard.service';
 
 const appRoutes:Routes = [
@@ -59,16 +61,17 @@ const appRoutes:Routes = [
     DashboardComponent,
     ProductsComponent,
     ProductDetailComponent,
-    CartComponent
+    CartComponent,
   ],
   imports: [
     HttpModule,
     FormsModule,
     BrowserModule,
     RouterModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    FlashMessagesModule
   ],
-  providers: [RegistrationService,LoginService,DashboardService],
+  providers: [AuthService,DashboardService,FlashMessagesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

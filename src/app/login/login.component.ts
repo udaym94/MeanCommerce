@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl,Form,FormsModule } from '@angular/forms';
-import { LoginService } from '../login.service';
+import { AuthService } from '../auth.service';
 import { Http } from '@angular/http';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+
+import { FlashMessagesService } from 'angular2-flash-messages';
+// import { DomSanitizer } from '@angular/platform-browser';
 // import 'rxjs/add/operator/map';
 
 @Component({
@@ -12,22 +14,29 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  result;
-  outputMsg: any;
-  constructor(private loginService: LoginService, private http: Http, private sanitizer: DomSanitizer, private router: Router) { }
+  authToken;
+  user;
+  constructor(
+    private authService: AuthService,
+    private http: Http,
+    private flashMessage: FlashMessagesService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
   }
   authUser(data: any){
-    this.loginService.authenticateUser(data).subscribe( (response) => 
+    this.authService.authenticateUser(data).subscribe( (response) => 
     {
-      this.result = response.json();
-      if(this.result.success == true){
-        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Login Successful</strong> Taking You to Dashboard <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-        this.router.navigate(['/dashboard'], { queryParams: { auth_token: this.result.token } });
+      this.user = response.json();
+      if(this.user.success == true){
+        this.authService.storeUserData(this.user.token, this.user.user);
+        this.flashMessage.show('Login Successfull, taking you to Dashboard',{cssClass: 'alert alert-success col-md-6 offset-md-3',timeOut:3000});
+        this.router.navigate(['dashboard']);
       }
-      else if(this.result.success == false){
-        this.outputMsg = this.sanitizer.bypassSecurityTrustHtml('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Whoops!</strong> ' + this.result.msg + ' <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+      else if(this.user.success == false){
+        this.flashMessage.show(this.user.msg,{cssClass: 'alert alert-danger col-md-6 offset-md-3',timeOut:5000});
+        this.router.navigate(['login']);
       }
     });
   }
