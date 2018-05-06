@@ -10,6 +10,7 @@ var config = require('./config/database');
 
 mongoose.connect('mongodb://localhost/meancommerce');
 var User = require('./models/userModel');
+var Product = require('./models/productModel');
 // const conn = mongoose.createConnection('mongodb://localhost/meancommerce');
 
 // console.log('Connection ' + conn.db);
@@ -82,13 +83,13 @@ router.post('/authenticate', (req, res, next) => {
     res.json({user: req.user});
   });
 
-//   router.get('/dashboard', (req,res) => {
-//     const loggedInUser = '5ae3eb4ebe031920d02c82c4';
-//     User.findById(loggedInUser, (err,user)=> {
-//         if(err) res.send('err');
-//         response.data = user;
-//         res.json(response);
-//     });
-//   })
+  router.get('/products', (req, res) => {
+    Product.getProducts((err, products) => {
+      if(err) throw err;
+      response.data = products;
+      return res.json(response);
+    });
+
+  });
 
 module.exports = router;

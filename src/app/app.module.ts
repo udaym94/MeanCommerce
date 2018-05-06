@@ -16,9 +16,11 @@ import { CartComponent } from './cart/cart.component';
 
 // import {RegistrationService} from './registration.service';
 // import {LoginService} from './login.service';
+// import {DashboardService} from './dashboard.service';
 import {FlashMessagesModule, FlashMessagesService} from 'angular2-flash-messages';
 import { AuthService } from './auth.service';
-import {DashboardService} from './dashboard.service';
+import { ProductService } from './product.service';
+
 
 const appRoutes:Routes = [
   {
@@ -71,7 +73,7 @@ const appRoutes:Routes = [
     RouterModule.forRoot(appRoutes),
     FlashMessagesModule
   ],
-  providers: [AuthService,DashboardService,FlashMessagesService],
+  providers: [AuthService,ProductService,FlashMessagesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

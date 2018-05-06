@@ -1,3 +1,51 @@
-<p>
-  products works!
-</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="products">
+      <!--Product-->
+        <div *ngFor = "let product of products" class="col-md-3 col-sm-3 col-xs-6">
+            <div class="product-img">
+              <img class="img-responsive" src="{{ product.image }}">
+            </div>
+            <div class="product-info">
+              <div class="product-name">
+                <p>{{ product.title }}</p>
+              </div>
+              <div class="product-details">
+                <div class="price pull-left">
+                  <p>$ {{ product.price }}</p>
+                </div>
+                <div class="product-actions">
+                  <button class="btn btn-info">View</button>
+                  <button class="btn btn-warning">Add to cart</button>
+                </div>
+              </div>
+            </div>
+        </div>
+      <!--Product-->
+
+        <!-- 
+          <div class="col-md-3 col-sm-3 col-xs-6">
+            <div class="product-img">
+              <img class="img-responsive" src="http://via.placeholder.com/295x165">
+            </div>
+            <div class="product-info">
+              <div class="product-name">
+                <p>Product Title</p>
+              </div>
+              <div class="product-details">
+                <div class="price pull-left">
+                  <p>$ 49.99</p>
+                </div>
+                <div class="product-actions">
+                  <button class="btn btn-info">View</button>
+                  <button class="btn btn-warning">Add to cart</button>
+                </div>
+              </div>
+            </div>
+        </div>
+         -->
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+a{
+    text-decoration: none;
+    color: aliceblue;
+}
+a:hover{
+    text-decoration: none;
+    color: aliceblue;
+}
+ul.navbar-nav > li.active{
+    font-weight: bold;
+    color: white;
+}
+.products{
+    width:100%;
+    margin-top: 2%;
+}
+.products > div{
+    float: left;
+    margin-bottom: 2%;
+}

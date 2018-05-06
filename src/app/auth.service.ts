@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 
+import { JwtModule } from '@auth0/angular-jwt';
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -22,7 +23,12 @@ export class AuthService {
   }
 
   getDashboard(){
-
+    let headers = new Headers();
+    // let headers = new Headers();
+    this.loadToken();
+    headers.append('Authorization', this.authToken);
+    headers.append('Content-Type','application/json');
+    return this._http.get('/dashboard', {headers: headers}).map(res => res.json());
   }
 
   storeUserData(token, user){
@@ -30,6 +36,11 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(user));
     this.authToken = token;
     this.user = user;
+  }
+
+  loadToken(){
+    const token = localStorage.getItem('id_token');
+    this.authToken = token;
   }
 
 }

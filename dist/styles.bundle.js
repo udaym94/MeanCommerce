@@ -42,7 +42,7 @@ module.exports = "/*!\n * Bootstrap v4.1.0 (https://getbootstrap.com/)\n * Copyr
 /***/ "./node_modules/raw-loader/index.js!./node_modules/postcss-loader/lib/index.js??embedded!./src/styles.css":
 /***/ (function(module, exports) {
 
-module.exports = "/* You can add global styles to this file, and also import other style files */\n"
+module.exports = "/* You can add global styles to this file, and also import other style files */\na{\n    text-decoration: none;\n    color: aliceblue;\n}\na:hover{\n    text-decoration: none;\n    color: aliceblue;\n}\nul.navbar-nav > li.active{\n    font-weight: bold;\n    color: white;\n}\n.products{\n    width:100%;\n    margin-top: 2%;\n}\n.products > div{\n    float: left;\n    margin-bottom: 2%;\n}"
 
 /***/ }),
 
