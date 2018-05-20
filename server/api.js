@@ -92,4 +92,30 @@ router.post('/authenticate', (req, res, next) => {
 
   });
 
+  router.get('/productDetails/:id', (req,res) => {
+    const id = req.params.id;
+    Product.findById(id, (err, product) => {
+      if(err) throw err;
+      response.data = product;
+      res.json(response);
+    });
+  });
+
+  router.post('/verifytoken', (req, res) => {
+    var token = req.token;
+    jwt.verify(token, config.secret, (err,payload) => {
+      if(err) {
+        return false;
+      }else if(payload){
+        return true;
+      }
+
+    });
+  });
+
+  router.put('/updateUserSettings', (req,res) => {
+    // User.update(req.)
+  });
+
+
 module.exports = router;

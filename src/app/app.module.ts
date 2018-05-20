@@ -20,6 +20,7 @@ import { CartComponent } from './cart/cart.component';
 import {FlashMessagesModule, FlashMessagesService} from 'angular2-flash-messages';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
+// import { JwtHelperService } from '@auth0/angular-jwt';
 
 
 const appRoutes:Routes = [
@@ -44,7 +45,7 @@ const appRoutes:Routes = [
     component: ProductsComponent
   },
   {
-    path:'productdetail',
+    path:'product/:id',
     component: ProductDetailComponent
   },
   {
@@ -63,7 +64,7 @@ const appRoutes:Routes = [
     DashboardComponent,
     ProductsComponent,
     ProductDetailComponent,
-    CartComponent,
+    CartComponent    
   ],
   imports: [
     HttpModule,

@@ -111,6 +111,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+// import { JwtHelperService } from '@auth0/angular-jwt';
 var appRoutes = [
     {
         path: '',
@@ -133,7 +134,7 @@ var appRoutes = [
         component: __WEBPACK_IMPORTED_MODULE_11__products_products_component__["a" /* ProductsComponent */]
     },
     {
-        path: 'productdetail',
+        path: 'product/:id',
         component: __WEBPACK_IMPORTED_MODULE_12__product_detail_product_detail_component__["a" /* ProductDetailComponent */]
     },
     {
@@ -155,14 +156,14 @@ var AppModule = /** @class */ (function () {
                 __WEBPACK_IMPORTED_MODULE_10__dashboard_dashboard_component__["a" /* DashboardComponent */],
                 __WEBPACK_IMPORTED_MODULE_11__products_products_component__["a" /* ProductsComponent */],
                 __WEBPACK_IMPORTED_MODULE_12__product_detail_product_detail_component__["a" /* ProductDetailComponent */],
-                __WEBPACK_IMPORTED_MODULE_13__cart_cart_component__["a" /* CartComponent */],
+                __WEBPACK_IMPORTED_MODULE_13__cart_cart_component__["a" /* CartComponent */]
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_2__angular_http__["c" /* HttpModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(appRoutes),
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["c" /* RouterModule */],
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["c" /* RouterModule */].forRoot(appRoutes),
                 __WEBPACK_IMPORTED_MODULE_14_angular2_flash_messages__["FlashMessagesModule"]
             ],
             providers: [__WEBPACK_IMPORTED_MODULE_15__auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_16__product_service__["a" /* ProductService */], __WEBPACK_IMPORTED_MODULE_14_angular2_flash_messages__["FlashMessagesService"]],
@@ -196,6 +197,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+// import { JwtHelperService } from '@auth0/angular-jwt';
 var AuthService = /** @class */ (function () {
     function AuthService(_http) {
         this._http = _http;
@@ -208,7 +210,19 @@ var AuthService = /** @class */ (function () {
         var _this = this;
         return this._http.post('/authenticate', user).map(function (response) { return _this.user = response; });
     };
+    AuthService.prototype.loggedIn = function () {
+        // console.log('loggedIn called');
+        if (localStorage.getItem('id_token')) {
+            var savedToken = localStorage.getItem('id_token');
+            return this._http.post('/verifytoken', savedToken);
+        }
+        else {
+            return false;
+        }
+    };
     AuthService.prototype.logout = function () {
+        this.authToken = null;
+        this.user = null;
         localStorage.clear();
     };
     AuthService.prototype.getDashboard = function () {
@@ -228,6 +242,9 @@ var AuthService = /** @class */ (function () {
     AuthService.prototype.loadToken = function () {
         var token = localStorage.getItem('id_token');
         this.authToken = token;
+    };
+    AuthService.prototype.updateUserSettings = function (user) {
+        return this._http.put('/updateUserSettings', user).map(function (response) { return user = response.json().data; });
     };
     AuthService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
@@ -250,7 +267,7 @@ module.exports = ""
 /***/ "./src/app/cart/cart.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  cart works!\n</p>\n"
+module.exports = "<div class=\"container\">\n  <div class=\"row\">\n    <table class=\"table\">\n      <thead class=\"thead-dark\">\n        <tr>\n          <th scope=\"col\">#</th>\n          <th scope=\"col\">Item Name</th>\n          <th scope=\"col\">Quantity</th>\n          <th scope=\"col\">Amount</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <th scope=\"row\">1</th>\n          <td>Item 15464548797498749870987979879879</td>\n          <td>1</td>\n          <td>Apr 20, 2018</td>\n          <td>$15</td>\n        </tr>\n      </tbody>\n    </table>\n  </div>>\n</div>\n"
 
 /***/ }),
 
@@ -260,6 +277,7 @@ module.exports = "<p>\n  cart works!\n</p>\n"
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CartComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__product_service__ = __webpack_require__("./src/app/product.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -270,10 +288,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 var CartComponent = /** @class */ (function () {
-    function CartComponent() {
+    function CartComponent(productService) {
+        this.productService = productService;
     }
     CartComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.productService.generateCartDetails().subscribe(function (response) { return _this.cartDetails = response; });
     };
     CartComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -281,7 +303,7 @@ var CartComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/cart/cart.component.html"),
             styles: [__webpack_require__("./src/app/cart/cart.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__product_service__["a" /* ProductService */]])
     ], CartComponent);
     return CartComponent;
 }());
@@ -300,7 +322,7 @@ module.exports = ""
 /***/ "./src/app/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h5 class=\"text-center\"> User Dashboard </h5>\n\n<div class=\"col-md-10 offset-md-1\">\n  <ul class=\"nav nav-tabs\" id=\"myTab\" role=\"tablist\">\n    <li class=\"nav-item\">\n      <a class=\"nav-link active\" id=\"myaccount-tab\" data-toggle=\"tab\" href=\"#myaccount\" role=\"tab\" aria-controls=\"myaccount\" aria-selected=\"true\">My Account</a>\n    </li>\n    <li class=\"nav-item\">\n      <a class=\"nav-link\" id=\"orders-tab\" data-toggle=\"tab\" href=\"#orders\" role=\"tab\" aria-controls=\"orders\" aria-selected=\"false\">Orders</a>\n    </li>\n    <li class=\"nav-item\">\n      <a class=\"nav-link\" id=\"settings-tab\" data-toggle=\"tab\" href=\"#settings\" role=\"tab\" aria-controls=\"settings\" aria-selected=\"false\">Settings</a>\n    </li>\n  </ul>\n  <div class=\"tab-content\" id=\"myTabContent\">\n    <div class=\"tab-pane fade show active\" id=\"myaccount\" role=\"tabpanel\" aria-labelledby=\"myaccount-tab\">\n      My Account\n    </div>\n    <div class=\"tab-pane fade\" id=\"orders\" role=\"tabpanel\" aria-labelledby=\"orders-tab\">\n      My Orders\n\n      <table class=\"table col-md-8 offset-md-2\">\n        <thead class=\"thead-dark\">\n          <tr>\n            <th scope=\"col\">#</th>\n            <th scope=\"col\">Item Name</th>\n            <th scope=\"col\">Quantity</th>\n            <th scope=\"col\">Order Date</th>\n            <th scope=\"col\">Amount</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr>\n            <th scope=\"row\">1</th>\n            <td>Item 15464548797498749870987979879879</td>\n            <td>1</td>\n            <td>Apr 20, 2018</td>\n            <td>$15</td>\n          </tr>\n          <tr>\n            <th scope=\"row\">2</th>\n            <td>Item 4</td>\n            <td>1</td>\n            <td>Apr 21, 2018</td>\n            <td>$75</td>\n          </tr>\n          <tr>\n            <th scope=\"row\">3</th>\n            <td>Item 5</td>\n            <td>1</td>\n            <td>Apr 19, 2018</td>\n            <td>$35</td>\n          </tr>\n        </tbody>\n      </table>      \n\n    </div>\n    \n    <div class=\"tab-pane fade\" id=\"settings\" role=\"tabpanel\" aria-labelledby=\"settings-tab\">\n      <form class=\"col-md-6 offset-md-3\">\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"name\">Full Name</label>\n          <input type=\"text\" name=\"name\" value=\"{{ userDetails.name }}\" id=\"name\" class=\"form-control\" placeholder=\"e.g John Doe\">\n        </div>\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"email\">Email Address</label>\n          <input type=\"email\" name=\"email\" value=\"{{ userDetails.email }}\" id=\"email\" class=\"form-control\" placeholder=\"e.g John Doe\">\n        </div>\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"username\">Username</label>\n          <input type=\"text\" name=\"username\" value=\"{{ userDetails.username }}\" id=\"username\" class=\"form-control\" placeholder=\"e.g John Doe\">\n        </div>\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"password\">Password</label>\n          <input type=\"password\" name=\"password\" value=\"{{ userDetails.password }}\" id=\"password\" class=\"form-control\" placeholder=\"e.g John Doe\">\n        </div>\n        <div class=\"form-group\">\n          <button class=\"btn btn-warning\">Update Details</button>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<h5 class=\"text-center\"> User Dashboard </h5>\n\n<div class=\"col-md-10 offset-md-1\">\n  <ul class=\"nav nav-tabs\" id=\"myTab\" role=\"tablist\">\n    <li class=\"nav-item\">\n      <a class=\"nav-link active\" id=\"myaccount-tab\" data-toggle=\"tab\" href=\"#myaccount\" role=\"tab\" aria-controls=\"myaccount\" aria-selected=\"true\">My Account</a>\n    </li>\n    <li class=\"nav-item\">\n      <a class=\"nav-link\" id=\"orders-tab\" data-toggle=\"tab\" href=\"#orders\" role=\"tab\" aria-controls=\"orders\" aria-selected=\"false\">Orders</a>\n    </li>\n    <li class=\"nav-item\">\n      <a class=\"nav-link\" id=\"settings-tab\" data-toggle=\"tab\" href=\"#settings\" role=\"tab\" aria-controls=\"settings\" aria-selected=\"false\">Settings</a>\n    </li>\n  </ul>\n  <div class=\"tab-content\" id=\"myTabContent\">\n    <div class=\"tab-pane fade show active\" id=\"myaccount\" role=\"tabpanel\" aria-labelledby=\"myaccount-tab\">\n      My Account\n    </div>\n    <div class=\"tab-pane fade\" id=\"orders\" role=\"tabpanel\" aria-labelledby=\"orders-tab\">\n      My Orders\n\n      <table class=\"table col-md-8 offset-md-2\">\n        <thead class=\"thead-dark\">\n          <tr>\n            <th scope=\"col\">#</th>\n            <th scope=\"col\">Item Name</th>\n            <th scope=\"col\">Quantity</th>\n            <th scope=\"col\">Order Date</th>\n            <th scope=\"col\">Amount</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr>\n            <th scope=\"row\">1</th>\n            <td>Item 15464548797498749870987979879879</td>\n            <td>1</td>\n            <td>Apr 20, 2018</td>\n            <td>$15</td>\n          </tr>\n          <tr>\n            <th scope=\"row\">2</th>\n            <td>Item 4</td>\n            <td>1</td>\n            <td>Apr 21, 2018</td>\n            <td>$75</td>\n          </tr>\n          <tr>\n            <th scope=\"row\">3</th>\n            <td>Item 5</td>\n            <td>1</td>\n            <td>Apr 19, 2018</td>\n            <td>$35</td>\n          </tr>\n        </tbody>\n      </table>      \n\n    </div>\n    \n    <div class=\"tab-pane fade\" id=\"settings\" role=\"tabpanel\" aria-labelledby=\"settings-tab\">\n      <form class=\"col-md-6 offset-md-3\" #usersettings = \"ngForm\" (ngSubmit) = \"updateSettings(usersettings.value)\">\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"name\">Full Name</label>\n          <input type=\"text\" name=\"name\" value=\"{{ userDetails.name }}\" id=\"name\" class=\"form-control\" placeholder=\"e.g John Doe\" ngModel>\n        </div>\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"email\">Email Address</label>\n          <input type=\"email\" name=\"email\" value=\"{{ userDetails.email }}\" id=\"email\" class=\"form-control\" placeholder=\"e.g John Doe\" ngModel>\n        </div>\n        <div class=\"form-group\">\n          <label class=\"control-label\" for=\"username\">Username</label>\n          <input type=\"text\" name=\"username\" value=\"{{ userDetails.username }}\" id=\"username\" class=\"form-control\" placeholder=\"e.g John Doe\" ngModel>\n        </div>\n        <!-- <div class=\"form-group\">\n          <label class=\"control-label\" for=\"password\">Password</label>\n          <input type=\"password\" name=\"password\" value=\"{{ userDetails.password }}\" id=\"password\" class=\"form-control\" placeholder=\"e.g John Doe\">\n        </div> -->\n        <div class=\"form-group\">\n          <button class=\"btn btn-warning\">Update Details</button>\n        </div>\n      </form>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -325,6 +347,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var DashboardComponent = /** @class */ (function () {
     function DashboardComponent(authService) {
         this.authService = authService;
+        this.userDetails = [];
     }
     DashboardComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -335,6 +358,10 @@ var DashboardComponent = /** @class */ (function () {
             console.log(err);
             return false;
         });
+    };
+    DashboardComponent.prototype.updateSettings = function (user) {
+        var _this = this;
+        this.authService.updateUserSettings(user).subscribe(function (response) { return _this.userDetails = response; });
     };
     DashboardComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -411,7 +438,7 @@ module.exports = ""
 /***/ "./src/app/header/header.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar navbar-dark bg-primary\">\r\n    <div class=\"container-fluid\">\r\n      <div class=\"navbar-header\">\r\n        <a class=\"navbar-brand\" routerLink = '/'><h4>MeanCommerce</h4></a>\r\n      </div>\r\n      <ul class=\"nav navbar-nav\">\r\n        <li class=\"nav-item\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"products\" >Browse Products</a></li>\r\n        <!-- <li><a href=\"#\">Page 1</a></li>\r\n        <li><a href=\"#\">Page 2</a></li> -->\r\n      </ul>\r\n      <ul class=\"nav navbar-nav navbar-right\">\r\n        <li class=\"nav-item\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"/register\"><span class=\"glyphicon glyphicon-user\"></span> Sign Up</a></li>\r\n        <li class=\"nav-item\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"/login\"><span class=\"glyphicon glyphicon-log-in\"></span> Login</a></li>\r\n      </ul>\r\n    </div>\r\n  </nav> "
+module.exports = "<nav class=\"navbar navbar-dark bg-primary\">\r\n    <div class=\"container-fluid\">\r\n      <div class=\"navbar-header\">\r\n        <a class=\"navbar-brand\" routerLink = '/'><h4>MeanCommerce</h4></a>\r\n      </div>\r\n      <ul class=\"nav navbar-nav\">\r\n        <li class=\"nav-item\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"products\" >Browse Products</a></li>\r\n        <!-- <li><a href=\"#\">Page 1</a></li>\r\n        <li><a href=\"#\">Page 2</a></li> -->\r\n      </ul>\r\n      <ul class=\"nav navbar-nav navbar-right\">\r\n        <li class=\"nav-item\" *ngIf=\"!authService.loggedIn()\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"/register\"><span class=\"glyphicon glyphicon-user\"></span> Sign Up</a></li>\r\n        <li class=\"nav-item\" *ngIf=\"!authService.loggedIn()\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"/login\"><span class=\"glyphicon glyphicon-log-in\"></span> Login</a></li>\r\n\r\n        <li class=\"nav-item\" *ngIf=\"authService.loggedIn()\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\" (click) = \"authService.logout()\" >Logout</li>\r\n        <li class=\"nav-item\" *ngIf=\"authService.loggedIn()\" routerLinkActive = \"active\" routerLinkActiveOptions = \"['exact:true']\"><a routerLink = \"/cart\"> Cart <span class=\"cartCount\"> {{ productService.cartItemCount }}</span></a></li>\r\n      </ul>\r\n    </div>\r\n  </nav> "
 
 /***/ }),
 
@@ -421,6 +448,8 @@ module.exports = "<nav class=\"navbar navbar-dark bg-primary\">\r\n    <div clas
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeaderComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_service__ = __webpack_require__("./src/app/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__product_service__ = __webpack_require__("./src/app/product.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -431,9 +460,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
+
 var HeaderComponent = /** @class */ (function () {
-    function HeaderComponent() {
+    function HeaderComponent(authService, productService) {
+        this.authService = authService;
+        this.productService = productService;
     }
+    // constructor(){  }
     HeaderComponent.prototype.ngOnInit = function () {
     };
     HeaderComponent = __decorate([
@@ -442,7 +476,8 @@ var HeaderComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/header/header.component.html"),
             styles: [__webpack_require__("./src/app/header/header.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__auth_service__["a" /* AuthService */],
+            __WEBPACK_IMPORTED_MODULE_2__product_service__["a" /* ProductService */]])
     ], HeaderComponent);
     return HeaderComponent;
 }());
@@ -525,7 +560,7 @@ var LoginComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__auth_service__["a" /* AuthService */],
             __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */],
             __WEBPACK_IMPORTED_MODULE_4_angular2_flash_messages__["FlashMessagesService"],
-            __WEBPACK_IMPORTED_MODULE_3__angular_router__["a" /* Router */]])
+            __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* Router */]])
     ], LoginComponent);
     return LoginComponent;
 }());
@@ -544,7 +579,7 @@ module.exports = ""
 /***/ "./src/app/product-detail/product-detail.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  product-detail works!\n</p>\n"
+module.exports = "<div class=\"container-fluid\">\n  <div class=\"row\">\n    <div class=\"products\">\n      <!--Product-->\n        <div ngIF = \"product\" class=\"col-md-8 offset-md-2 col-sm-8 offset-sm-2 col-xs-12\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"{{ product.image }}\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>{{ product.title }}</p>\n              </div>\n              <div class=\"product-detailss\">\n                <div class=\"price pull-left\">\n                  <p>$ {{ product.price }}</p>\n                </div>\n                <div class=\"product-actionss\">\n                  <!-- <button class=\"btn btn-info\" routerLink =  >View</button> -->\n                  <a class=\"btn btn-info\" routerLink = \"/products\"><i class=\"fa fa-arrow-left\" aria-hidden=\"true\"></i></a>\n                  <button class=\"btn btn-warning\" (click) = addToCart(product._id)><i class=\"fa fa-cart-plus\" aria-hidden=\"true\"></i></button>\n                </div>\n                <div class=\"description\">\n                  <p>\n                    {{ product.description }}\n                  </p>\n                </div>\n              </div>\n            </div>\n        </div>\n      <!--Product-->\n\n        <!-- \n          <div class=\"col-md-3 col-sm-3 col-xs-6\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"http://via.placeholder.com/295x165\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>Product Title</p>\n              </div>\n              <div class=\"product-details\">\n                <div class=\"price pull-left\">\n                  <p>$ 49.99</p>\n                </div>\n                <div class=\"product-actions\">\n                  <button class=\"btn btn-info\">View</button>\n                  <button class=\"btn btn-warning\">Add to cart</button>\n                </div>\n              </div>\n            </div>\n        </div>\n         -->\n\n      <div class=\"clearfix\"></div>\n    </div>\n  </div>\n</div>\n\n"
 
 /***/ }),
 
@@ -554,6 +589,8 @@ module.exports = "<p>\n  product-detail works!\n</p>\n"
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ProductDetailComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__product_service__ = __webpack_require__("./src/app/product.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -564,10 +601,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+// import { r } from '@angular/http';
+
+
 var ProductDetailComponent = /** @class */ (function () {
-    function ProductDetailComponent() {
+    function ProductDetailComponent(productService, router, route) {
+        this.productService = productService;
+        this.router = router;
+        this.route = route;
+        this.product = [];
     }
     ProductDetailComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        var id = this.route.snapshot.paramMap.get('id');
+        this.productService.getProductDetailsByID(id).subscribe(function (response) { return _this.product = response; });
     };
     ProductDetailComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -575,7 +622,9 @@ var ProductDetailComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/product-detail/product-detail.component.html"),
             styles: [__webpack_require__("./src/app/product-detail/product-detail.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__product_service__["a" /* ProductService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* ActivatedRoute */]])
     ], ProductDetailComponent);
     return ProductDetailComponent;
 }());
@@ -605,10 +654,68 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var ProductService = /** @class */ (function () {
     function ProductService(http) {
         this.http = http;
+        this.cartItemCount = 0;
     }
     ProductService.prototype.getProducts = function () {
         var _this = this;
         return this.http.get('/products').map(function (response) { return _this.products = response.json().data; });
+    };
+    ProductService.prototype.getProductDetailsByID = function (id) {
+        var _this = this;
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
+        // let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        return this.http.get('/productDetails/' + id, { headers: headers }).map(function (response) { return _this.products = response.json().data; });
+    };
+    ProductService.prototype.addProductToCart = function (id) {
+        var _this = this;
+        var currentItems;
+        var cartItemsArr = Array();
+        var cartObject = [];
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        this.http.get('/productDetails/' + id, { headers: headers }).map(function (response) { return _this.products = response.json().data; });
+        currentItems = localStorage.getItem('cart');
+        if (currentItems == null) {
+            cartItemsArr.push(id);
+            this.cartItemCount = 1;
+        }
+        else {
+            cartItemsArr = JSON.parse(currentItems);
+            this.cartItemCount = cartItemsArr.length;
+            if (this.cartItemCount > 0) {
+                cartItemsArr.push(id);
+                this.cartItemCount += 1;
+            }
+            else if (this.cartItemCount == 0) {
+                cartItemsArr.push(id);
+                this.cartItemCount = 1;
+            }
+        }
+        currentItems = JSON.stringify(cartItemsArr);
+        localStorage.setItem('cart', currentItems);
+        return this.cartItemCount;
+    };
+    ProductService.prototype.generateCartDetails = function () {
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
+        headers.append('Content-Type', 'application/json');
+        var cartItems;
+        var cartItemDetails = Array();
+        cartItems = localStorage.getItem('cart');
+        var cartItemsArray = JSON.parse(cartItems);
+        console.log(cartItemsArray);
+        if (cartItems == null) {
+            return false;
+        }
+        else {
+            cartItemsArray.forEach(function (cartItemId) {
+                console.log(cartItemId);
+                // this.http.get('/productDetails/'+cartItemId, {headers: headers}).map(response => console.log(response.json().data));
+            });
+            this.http.get('/productDetails/5aef0e4016bea02930c6583c', { headers: headers }).map(function (response) { return cartItemsArray.push(response.json().data); });
+            console.log(cartItemDetails);
+            return cartItemDetails;
+        }
     };
     ProductService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
@@ -631,7 +738,7 @@ module.exports = ""
 /***/ "./src/app/products/products.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n  <div class=\"row\">\n    <div class=\"products\">\n      <!--Product-->\n        <div *ngFor = \"let product of products\" class=\"col-md-3 col-sm-3 col-xs-6\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"{{ product.image }}\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>{{ product.title }}</p>\n              </div>\n              <div class=\"product-details\">\n                <div class=\"price pull-left\">\n                  <p>$ {{ product.price }}</p>\n                </div>\n                <div class=\"product-actions\">\n                  <button class=\"btn btn-info\">View</button>\n                  <button class=\"btn btn-warning\">Add to cart</button>\n                </div>\n              </div>\n            </div>\n        </div>\n      <!--Product-->\n\n        <!-- \n          <div class=\"col-md-3 col-sm-3 col-xs-6\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"http://via.placeholder.com/295x165\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>Product Title</p>\n              </div>\n              <div class=\"product-details\">\n                <div class=\"price pull-left\">\n                  <p>$ 49.99</p>\n                </div>\n                <div class=\"product-actions\">\n                  <button class=\"btn btn-info\">View</button>\n                  <button class=\"btn btn-warning\">Add to cart</button>\n                </div>\n              </div>\n            </div>\n        </div>\n         -->\n\n      <div class=\"clearfix\"></div>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<div class=\"container-fluid\">\n  <div class=\"row\">\n    <div class=\"products\">\n      <!--Product-->\n        <div *ngFor = \"let product of products\" class=\"col-md-3 col-sm-3 col-xs-6\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"{{ product.image }}\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>{{ product.title }}</p>\n              </div>\n              <div class=\"product-details\">\n                <div class=\"price pull-left\">\n                  <p>$ {{ product.price }}</p>\n                </div>\n                <div class=\"product-actions\">\n                  <!-- <button class=\"btn btn-info\" routerLink =  >View</button> -->\n                  <a class=\"btn btn-info\" routerLink = \"/product/{{ product._id }}\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>\n                  <button class=\"btn btn-warning\" (click) = addToCart(product._id)><i class=\"fa fa-cart-plus\" aria-hidden=\"true\"></i></button>\n                </div>\n              </div>\n            </div>\n        </div>\n      <!--Product-->\n\n        <!-- \n          <div class=\"col-md-3 col-sm-3 col-xs-6\">\n            <div class=\"product-img\">\n              <img class=\"img-responsive\" src=\"http://via.placeholder.com/295x165\">\n            </div>\n            <div class=\"product-info\">\n              <div class=\"product-name\">\n                <p>Product Title</p>\n              </div>\n              <div class=\"product-details\">\n                <div class=\"price pull-left\">\n                  <p>$ 49.99</p>\n                </div>\n                <div class=\"product-actions\">\n                  <button class=\"btn btn-info\">View</button>\n                  <button class=\"btn btn-warning\">Add to cart</button>\n                </div>\n              </div>\n            </div>\n        </div>\n         -->\n\n      <div class=\"clearfix\"></div>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -660,6 +767,10 @@ var ProductsComponent = /** @class */ (function () {
     ProductsComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.productService.getProducts().subscribe(function (response) { return _this.products = response; });
+    };
+    ProductsComponent.prototype.addToCart = function (id) {
+        this.cartItemsNumber = this.productService.addProductToCart(id);
+        console.log(this.cartItemsNumber);
     };
     ProductsComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -752,7 +863,7 @@ var RegisterComponent = /** @class */ (function () {
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__auth_service__["a" /* AuthService */],
             __WEBPACK_IMPORTED_MODULE_2__angular_http__["b" /* Http */],
-            __WEBPACK_IMPORTED_MODULE_3__angular_router__["a" /* Router */],
+            __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* Router */],
             __WEBPACK_IMPORTED_MODULE_4_angular2_flash_messages__["FlashMessagesService"]])
     ], RegisterComponent);
     return RegisterComponent;

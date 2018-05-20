@@ -11,6 +11,9 @@ ul.navbar-nav > li.active{
     font-weight: bold;
     color: white;
 }
+nav.navbar {
+    margin-bottom: 1%;
+}
 .products{
     width:100%;
     margin-top: 2%;
@@ -18,4 +21,17 @@ ul.navbar-nav > li.active{
 .products > div{
     float: left;
     margin-bottom: 2%;
+}
+.product-info > .product-name{
+    font-size: 1.3em;
+}
+.product-details > .price{
+    font-size: 1.1em;
+}
+.price {
+    display: inline-block;
+}
+.product-actions{
+    float: right;
+    display: inline-block;    
 }

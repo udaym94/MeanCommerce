@@ -4,13 +4,14 @@ import { Http } from '@angular/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  userDetails: Object;
+  userDetails: Object = [];
   constructor(private authService : AuthService) { }
 
   ngOnInit() {
@@ -23,6 +24,10 @@ export class DashboardComponent implements OnInit {
       return false;
     }
   );
+  }
+
+  updateSettings(user) {
+    this.authService.updateUserSettings(user).subscribe( response => this.userDetails = response);
   }
 
 }

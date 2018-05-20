@@ -3,6 +3,7 @@ import { Http, Headers } from '@angular/http';
 
 import { JwtModule } from '@auth0/angular-jwt';
 import 'rxjs/add/operator/map';
+// import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,19 @@ export class AuthService {
     return this._http.post('/authenticate', user).map(response => this.user = response);
   }
 
-  logout(){
+  loggedIn() {
+    // console.log('loggedIn called');
+    if(localStorage.getItem('id_token')){
+      let savedToken = localStorage.getItem('id_token');
+      return this._http.post('/verifytoken', savedToken);
+    }else{
+      return false;
+    }
+  }
+
+  logout() {
+    this.authToken = null;
+    this.user = null;
     localStorage.clear();
   }
 
@@ -41,6 +54,10 @@ export class AuthService {
   loadToken(){
     const token = localStorage.getItem('id_token');
     this.authToken = token;
+  }
+
+  updateUserSettings(user){
+    return this._http.put('/updateUserSettings',user).map(response => user = response.json().data);
   }
 
 }

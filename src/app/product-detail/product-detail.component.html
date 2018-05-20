@@ -1,3 +1,58 @@
-<p>
-  product-detail works!
-</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="products">
+      <!--Product-->
+        <div ngIF = "product" class="col-md-8 offset-md-2 col-sm-8 offset-sm-2 col-xs-12">
+            <div class="product-img">
+              <img class="img-responsive" src="{{ product.image }}">
+            </div>
+            <div class="product-info">
+              <div class="product-name">
+                <p>{{ product.title }}</p>
+              </div>
+              <div class="product-detailss">
+                <div class="price pull-left">
+                  <p>$ {{ product.price }}</p>
+                </div>
+                <div class="product-actionss">
+                  <!-- <button class="btn btn-info" routerLink =  >View</button> -->
+                  <a class="btn btn-info" routerLink = "/products"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+                  <button class="btn btn-warning" (click) = addToCart(product._id)><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
+                </div>
+                <div class="description">
+                  <p>
+                    {{ product.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+        </div>
+      <!--Product-->
+
+        <!-- 
+          <div class="col-md-3 col-sm-3 col-xs-6">
+            <div class="product-img">
+              <img class="img-responsive" src="http://via.placeholder.com/295x165">
+            </div>
+            <div class="product-info">
+              <div class="product-name">
+                <p>Product Title</p>
+              </div>
+              <div class="product-details">
+                <div class="price pull-left">
+                  <p>$ 49.99</p>
+                </div>
+                <div class="product-actions">
+                  <button class="btn btn-info">View</button>
+                  <button class="btn btn-warning">Add to cart</button>
+                </div>
+              </div>
+            </div>
+        </div>
+         -->
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+

@@ -15,8 +15,9 @@
                   <p>$ {{ product.price }}</p>
                 </div>
                 <div class="product-actions">
-                  <button class="btn btn-info">View</button>
-                  <button class="btn btn-warning">Add to cart</button>
+                  <!-- <button class="btn btn-info" routerLink =  >View</button> -->
+                  <a class="btn btn-info" routerLink = "/product/{{ product._id }}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                  <button class="btn btn-warning" (click) = addToCart(product._id)><i class="fa fa-cart-plus" aria-hidden="true"></i></button>
                 </div>
               </div>
             </div>
